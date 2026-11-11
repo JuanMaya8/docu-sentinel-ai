@@ -44,7 +44,15 @@ python -m pytest -q                       # o: python -m unittest discover -s te
 uvicorn app.main:app --reload --port 8000 # http://localhost:8000/docs
 ```
 
-## 5. Estado exacto (actualizado — v0.2.0)
+## 4b. Novedades v0.3.0 (leer primero)
+* `app/store.py`: backends `DiskBackend` / `PostgresBackend` (`DATABASE_URL`, tabla `ds_ai_models`, blob joblib
+  comprimido) y `MODEL_TTL_DAYS`. `ModelStore.from_env()` decide. `kind` aparece en `/health` como `store`.
+* `app/middleware.py`: `Metrics` + `MetricsMiddleware` (`GET /metrics`, `METRICS_TOKEN`) y `RateLimitMiddleware`
+  (`RATE_LIMIT_PER_MIN`, por API key o IP; `TRUST_PROXY=1` detrás de Render).
+* `tests/test_store_ops.py`: con `TEST_DATABASE_URL=postgres://…` prueba PostgreSQL real (48 pruebas en total).
+* Despliegue: `DEPLOY.md` + Blueprint en `docu-sentinel-backend/render.yaml`. CI con servicio `postgres`.
+
+## 5. Estado exacto (v0.2.0)
 
 **Hecho y VERIFICADO en Windows** (Python 3.11, FastAPI real; `python -m pytest -q` → **39 pruebas OK, 0 omitidas**):
 * Capa HTTP ejecutada: rutas, API key, CORS, errores, `X-Request-ID`, log JSON por petición, límite de cuerpo
