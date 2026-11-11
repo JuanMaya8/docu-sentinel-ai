@@ -230,18 +230,75 @@ def _extrapolation_score(model: FittedModel, z: np.ndarray) -> np.ndarray:
     return np.where(worst > 0.0, guard, 0.0)
 
 
+def _median_in_units(model: FittedModel, j: int) -> float:
+    m = float(model.median[j])
+    return float(np.exp(m)) if model.log.size and model.log[j] else m
+
+
+def _coherence_items(model: FittedModel, row: np.ndarray, zrow: np.ndarray, top_k: int) -> list[dict]:
+    """Coherence explains rows whose values are plausible one by one but not together. When a value lies
+    outside the training range, that extreme value is the real cause and is explained on its own."""
+    if model.coherence is None:
+        return []
+    value_kinds = np.array([k in ("numeric", "date", "rarity") for k in model.kinds])
+    outside = (zrow < model.z_min - 1e-9) | (zrow > model.z_max + 1e-9)
+    if bool((outside & value_kinds).any()):
+        return []
+    t, expected_z, dist = attribution(model.coherence, zrow)
+    if dist <= model.coherence.dev0:
+        return []
+    order = [
+        j
+        for j in range(len(model.columns))
+        if model.kinds[j] in ("numeric", "date") and abs(t[j]) >= COHERENCE_MIN_T and not np.isnan(row[j])
+    ]
+    order.sort(key=lambda j: (-abs(t[j]), j))
+    items = []
+    for j in order[: min(2, top_k)]:
+        v = float(model.median[j] + expected_z[j] * model.scale[j])
+        expected = float(np.exp(v)) if model.log.size and model.log[j] else v
+        col = model.columns[j]
+        items.append(
+            {
+                "column": col,
+                "field": _field_name(col),
+                "kind": "coherence",
+                "value": float(row[j]),
+                "median": _median_in_units(model, j),
+                "deviation": float(t[j]),
+                "expected": expected,
+                "message": describe_coherence(
+                    field=_field_name(col),
+                    feature_kind=model.kinds[j],
+                    value=float(row[j]),
+                    expected=expected,
+                ),
+            }
+        )
+    return items
+
+
 def explain_rows(
     model: FittedModel,
     x: np.ndarray,
     row_indexes: Sequence[int],
     top_k: int = 3,
 ) -> dict[str, list[dict]]:
-    """Top-k feature contributions per row, as dictionaries matching `Contribution`."""
+    """Top-k reasons per row, as dictionaries matching `Contribution`: broken coherence between
+    fields first, then extreme single values (same order as the frontend's `topContributions`)."""
     out: dict[str, list[dict]] = {}
+    if len(row_indexes) == 0:
+        return out
+    z_all = _z(model, x)
+    xs = _apply_log(x, model.log)
     for i in row_indexes:
         row = x[i]
+        items = _coherence_items(model, row, z_all[i], top_k)
+        used = {model.columns.index(c["column"]) for c in items}
         candidates: list[tuple[float, int, float]] = []
         for j, kind in enumerate(model.kinds):
+            if j in used:
+                continue
             value = row[j]
             if kind == "missing":
                 if np.isnan(value) or value < 0.5:
