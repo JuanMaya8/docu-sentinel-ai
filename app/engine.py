@@ -124,6 +124,10 @@ def _transform(x: np.ndarray, median: np.ndarray, scale: np.ndarray) -> np.ndarr
     return np.clip(z, -MAX_ABS_Z, MAX_ABS_Z)
 
 
+def _z(model: FittedModel, x: np.ndarray) -> np.ndarray:
+    return _transform(_apply_log(x, model.log), model.median, model.scale)
+
+
 def fit(
     columns: list[str],
     matrix: Sequence[Sequence[float | None]],
