@@ -97,6 +97,7 @@ class ModelInfo(BaseModel):
     kinds: list[FeatureKind]
     rows: int
     threshold: float
+    threshold_floor: float
     contamination: float
     seed: int
     trained_at: str
