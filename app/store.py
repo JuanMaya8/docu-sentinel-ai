@@ -178,9 +178,9 @@ class ModelStore:
                     409,
                 )
             model_id = f"mdl_{uuid.uuid4().hex[:12]}"
+            if self._backend is not None:
+                self._backend.save(model_id, model)
             self._models[model_id] = model
-            if self._dir:
-                joblib.dump(model, self._dir / f"{model_id}.joblib")
             return model_id
 
     def get(self, model_id: str) -> FittedModel:
