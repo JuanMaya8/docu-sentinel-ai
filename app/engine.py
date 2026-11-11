@@ -72,6 +72,34 @@ def to_array(matrix: Sequence[Sequence[float | None]], width: int) -> np.ndarray
     )
 
 
+def should_log(col: np.ndarray, kind: FeatureKind) -> bool:
+    """Positive, right-skewed numeric features (money, quantities) are modelled in log space."""
+    if kind != "numeric":
+        return False
+    col = col[~np.isnan(col)]
+    positive = col[col > 0]
+    n = positive.size
+    non_positive = col.size - n
+    if n < 30 or non_positive / max(1, col.size) > 0.005:
+        return False
+    q1, med, q3 = np.quantile(positive, [0.25, 0.5, 0.75])
+    if not q1 > 0:
+        return False
+    return bool(q3 - med > 1.5 * (med - q1) or (positive.max() / med > 20 and q3 > med))
+
+
+def _apply_log(x: np.ndarray, log: np.ndarray) -> np.ndarray:
+    """Log-transform the flagged columns; non-positive values become NaN (treated as missing)."""
+    if log.size == 0 or not log.any():
+        return x
+    out = x.copy()
+    cols = np.where(log)[0]
+    sub = out[:, cols]
+    positive = sub > 0
+    out[:, cols] = np.where(positive, np.log(np.where(positive, sub, 1.0)), np.nan)
+    return out
+
+
 def _robust_stats(x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     width = x.shape[1]
     median = np.zeros(width)
