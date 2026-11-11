@@ -1,8 +1,9 @@
 """FastAPI wiring. All logic lives in `service.py` / `engine.py`.
 
 Run:  uvicorn app.main:app --reload --port 8000
-Env:  MODELS_DIR (persist models), AI_API_KEY (require X-API-Key), CORS_ORIGINS (comma list),
-      MAX_BODY_MB (request body limit, default 64), LOG_LEVEL (default INFO)
+Env:  DATABASE_URL (models in PostgreSQL) or MODELS_DIR (models on disk), MODEL_TTL_DAYS,
+      AI_API_KEY (require X-API-Key), CORS_ORIGINS (comma list), MAX_BODY_MB (default 64), LOG_LEVEL (INFO),
+      RATE_LIMIT_PER_MIN (0 = off), TRUST_PROXY (1 behind a proxy), METRICS_TOKEN (protects /metrics)
 """
 
 from __future__ import annotations
