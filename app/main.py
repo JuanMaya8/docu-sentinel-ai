@@ -63,6 +63,12 @@ def create_app(service: AnomalyService | None = None, max_body_bytes: int | None
             CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"]
         )
 
+    app.add_middleware(
+        BodySizeLimitMiddleware,
+        max_bytes=max_body_bytes if max_body_bytes is not None else _max_body_bytes(),
+    )
+    app.add_middleware(RequestContextMiddleware)
+
     @app.exception_handler(ServiceError)
     async def _service_error(_: Request, exc: ServiceError) -> JSONResponse:
         return JSONResponse(status_code=exc.status, content=exc.to_dict())
