@@ -195,6 +195,7 @@ interface AnalysisSummary {
 | GET | `/baselines` | | `BaselineDto[]` |
 | GET | `/baselines/:id` | | `BaselineDto` |
 | DELETE | `/baselines/:id` | | 204 (también borra el modelo en la IA, best-effort) |
+| POST | `/baselines/:id/retrain` | `{ matrix, columns?, contamination?, thresholdFloor?, seed? }` (mismas columnas y orden) | `BaselineDto` con `version` + 1 (el modelo anterior se borra) · `422 SCHEMA_MISMATCH` si cambian las columnas |
 | POST | `/baselines/:id/score` | `{ matrix, explain?, topK?, schemaSignature? }` (las columnas las pone el backend) | `ScoreResponse` de la IA |
 
 ```ts
