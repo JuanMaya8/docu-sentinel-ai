@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, model_validator
 
 FeatureKind = Literal["numeric", "date", "missing", "rarity"]
 ExplainMode = Literal["flagged", "all", "none"]
+ContributionKind = Literal["numeric", "date", "missing", "rarity", "coherence"]
 
 MAX_ROWS = 200_000
 MAX_CELLS = 8_000_000
