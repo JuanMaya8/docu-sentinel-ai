@@ -137,14 +137,17 @@ def fit(
     seed: int = 42,
     name: str | None = None,
     schema_signature: str | None = None,
+    threshold_floor: float = ABS_THRESHOLD_FLOOR,
 ) -> tuple[FittedModel, np.ndarray]:
     """Train on `matrix`. Returns (model, training_scores)."""
     x = to_array(matrix, len(columns))
     if x.shape[0] < 20:
         raise ValueError("Se necesitan al menos 20 filas para entrenar un modelo")
     kinds = kinds or [infer_kind(c) for c in columns]
-    median, scale = _robust_stats(x)
-    z = _transform(x, median, scale)
+    log = np.array([should_log(x[:, j], k) for j, k in enumerate(kinds)], dtype=bool)
+    xs = _apply_log(x, log)
+    median, scale = _robust_stats(xs)
+    z = _transform(xs, median, scale)
     forest = IsolationForest(
         n_estimators=n_estimators,
         max_samples=min(256, x.shape[0]),
