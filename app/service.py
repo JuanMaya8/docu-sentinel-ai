@@ -82,7 +82,11 @@ class AnomalyService:
     # ---- use cases ---------------------------------------------------------------
     def health(self) -> HealthResponse:
         return HealthResponse(
-            status="ok", version=__version__, engine=engine.ENGINE_NAME, models=len(self.store)
+            status="ok",
+            version=__version__,
+            engine=engine.ENGINE_NAME,
+            models=len(self.store),
+            store=getattr(self.store, "kind", "memory"),
         )
 
     def train(self, req: TrainRequest) -> ModelInfo:
