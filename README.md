@@ -112,9 +112,10 @@ justificado en el README de `docu-sentinel-frontend`.
 
 | Estado | Elemento |
 |--------|----------|
-| ✅ Verificado — `python -m pytest -q` → **39 pruebas** (Python 3.11, FastAPI real) | Motor, coherencia, escala log, `threshold_floor`, compatibilidad con modelos guardados por v0.1, servicio, almacén con persistencia, explicaciones, formato es-CO, validación de esquema, rutas FastAPI, API key, `X-Request-ID`, límite de cuerpo (413) |
+| ✅ Verificado — `python -m pytest -q` → **48 pruebas** (Python 3.11, FastAPI real; las de PostgreSQL con `TEST_DATABASE_URL`) | Motor, coherencia, escala log, `threshold_floor`, compatibilidad con modelos guardados por v0.1, servicio, almacén en memoria / disco / **PostgreSQL**, caducidad de modelos (`MODEL_TTL_DAYS`), explicaciones, formato es-CO, validación de esquema, rutas FastAPI, API key, `X-Request-ID`, límite de cuerpo (413), **rate limit (429)**, **`/metrics` Prometheus** |
 | ✅ Verificado — integración real | `uvicorn` + `docu-sentinel-backend` real: entrenar línea base → puntuar → `SCHEMA_MISMATCH` → borrar; E2E con Playwright desde el frontend |
-| ❌ No hecho | Autenticación por usuario, modelos alternativos (autoencoder, LOF), reentrenamiento incremental, tablas de frecuencia de categorías dentro de la línea base, métricas de calidad sobre datos reales, almacenamiento externo de modelos (S3/GCS) |
+| ✅ Verificado — imagen Docker | `docker build` + arranque con `PORT=10000` y `DATABASE_URL` (igual que Render) |
+| ❌ No hecho (decisiones de diseño o requieren datos reales) | Modelos alternativos (autoencoder, LOF), reentrenamiento *incremental* (el backend reentrena creando un modelo nuevo), tablas de frecuencia de categorías dentro de la línea base (exigiría enviar textos originales), métricas de calidad sobre datos reales de una organización |
 
 ## Limitaciones conocidas
 * Las pruebas usan datos **sintéticos**. No hay validación con datos reales de una empresa.
