@@ -60,6 +60,7 @@ class AnomalyService:
                 seed=req.seed,
                 name=req.name,
                 schema_signature=req.schema_signature,
+                threshold_floor=req.threshold_floor,
             )
         except ValueError as exc:
             raise ServiceError("INVALID_TRAINING_DATA", str(exc), 422) from exc
