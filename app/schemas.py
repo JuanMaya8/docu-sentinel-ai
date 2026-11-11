@@ -56,6 +56,12 @@ class TrainRequest(_MatrixMixin):
     contamination: float = Field(default=0.01, gt=0.0, le=0.25)
     n_estimators: int = Field(default=200, ge=10, le=1000)
     seed: int = 42
+    threshold_floor: float = Field(
+        default=0.55,
+        ge=0.5,
+        lt=1.0,
+        description="Minimum anomaly score to flag a row (the frontend uses 0.65/0.60/0.55 for low/medium/high sensitivity)",
+    )
 
 
 class ScoreRequest(_MatrixMixin):
