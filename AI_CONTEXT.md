@@ -78,12 +78,14 @@ comando `python3 -m unittest discover -s tests -t .` → 25 tests, OK, 4 omitido
 * Almacenamiento de modelos fuera del disco local (S3/GCS) para despliegues efímeros.
 
 ## 6. Checklist para llegar al 100 % (en orden)
-1. Ejecutar y arreglar `tests/test_api.py` con fastapi real; ejecutar `docker build`.
-2. Prueba de integración real con `docu-sentinel-backend` (entrenar línea base → puntuar) siguiendo `docs/CONTRACT.md`.
-3. Guardar tablas de frecuencia en el modelo + endpoint para puntuar `rarity` con frecuencias históricas.
+1. ~~Ejecutar y arreglar `tests/test_api.py` con fastapi real; ejecutar `docker build`.~~ ✅
+2. ~~Prueba de integración real con `docu-sentinel-backend` (entrenar línea base → puntuar).~~ ✅
+2b. ~~Paridad con el motor del frontend (log, coherencia, `threshold_floor`).~~ ✅
+3. Guardar tablas de frecuencia en el modelo + endpoint para puntuar `rarity` con frecuencias históricas
+   (requiere decidir cómo enviar categorías sin textos originales, p. ej. hashes con sal).
 4. Evaluar con un dataset real (p. ej. facturas/inventario anonimizados): medir precisión/recobrado y recalibrar umbral.
 5. Versionado de modelos y borrado por antigüedad; almacenamiento externo.
-6. Observabilidad y límites (rate limit, tamaño de cuerpo, timeouts).
+6. Observabilidad y límites: ~~tamaño de cuerpo~~ ✅, ~~request id + logs JSON~~ ✅; faltan rate limit y `/metrics`.
 7. Desplegar (Render/Railway/Cloud Run) con `AI_API_KEY` y volumen para `MODELS_DIR`.
 
 ## 7. Prompts sugeridos para continuar
