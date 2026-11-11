@@ -1,6 +1,10 @@
-"""Anomaly engine: robust preprocessing + Isolation Forest + per-feature explanations.
+"""Anomaly engine: robust preprocessing + Isolation Forest + coherence model + per-feature explanations.
 
 Pure numpy/scikit-learn. No web framework imports, so it is unit-testable anywhere.
+Parity with docu-sentinel-frontend/src/engine/ml/isolationForest.ts:
+  * positive, right-skewed numeric features are modelled in log space (`should_log`),
+  * a trimmed Mahalanobis "coherence" model catches broken relations between fields,
+  * the minimum flag score (`threshold_floor`) is configurable per model.
 """
 
 from __future__ import annotations
