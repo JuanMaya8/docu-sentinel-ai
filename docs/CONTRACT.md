@@ -145,6 +145,23 @@ interface ColumnSummaryDto {
 }
 ```
 
+### Cuentas de usuario (solo si el backend define `JWT_SECRET`)
+Sin `JWT_SECRET` todo funciona como antes (sin login). Con `JWT_SECRET`, **todas** las rutas de `/analyses` y
+`/baselines` exigen `Authorization: Bearer <token>` (si falta o expiró: `401 AUTH_REQUIRED`) y cada reporte y línea base
+pertenece a quien lo creó: los de otro usuario responden `404`.
+
+| Método | Ruta | Cuerpo | Respuesta |
+|--------|------|--------|-----------|
+| POST | `/auth/register` | `{ email, password (8–200), name? }` | `AuthSession` (201) · `409 EMAIL_TAKEN` · `403 REGISTRATION_DISABLED` |
+| POST | `/auth/login` | `{ email, password }` | `AuthSession` · `401 INVALID_CREDENTIALS` |
+| GET | `/auth/me` | | `User` |
+
+```ts
+interface User { id: string; email: string; name: string; createdAt: string }
+interface AuthSession { token: string; expiresAt: string; user: User }   // token = JWT HS256, JWT_TTL_HOURS (168)
+```
+El frontend guarda el token en `localStorage` y en la cookie `ds_token` (para que el SSR de `/reportes` lo reenvíe).
+
 ### Análisis (historial de reportes)
 | Método | Ruta | Cuerpo / query | Respuesta |
 |--------|------|----------------|-----------|
