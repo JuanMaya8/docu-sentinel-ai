@@ -150,7 +150,10 @@ def create_app(
     @app.post("/v1/models/{model_id}/score", response_model=ScoreResponse, tags=["models"],
               dependencies=[Depends(require_api_key)], responses=errors)
     def score(model_id: str, req: ScoreRequest) -> ScoreResponse:
-        return svc.score(model_id, req)
+        resp = svc.score(model_id, req)
+        metrics.inc("ds_ai_rows_scored_total", by=len(resp.scores))
+        metrics.inc("ds_ai_rows_flagged_total", by=sum(resp.flags))
+        return resp
 
     @app.post("/v1/detect", response_model=DetectResponse, tags=["detect"],
               dependencies=[Depends(require_api_key)], responses=errors)
