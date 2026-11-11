@@ -81,10 +81,19 @@ def create_app(
             CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"]
         )
 
+    metrics = Metrics()
+    metrics_token = os.environ.get("METRICS_TOKEN") or None
+    # outermost first in the request path: request id -> metrics -> rate limit -> body limit -> app
     app.add_middleware(
         BodySizeLimitMiddleware,
         max_bytes=max_body_bytes if max_body_bytes is not None else _max_body_bytes(),
     )
+    app.add_middleware(
+        RateLimitMiddleware,
+        per_minute=rate_limit_per_min if rate_limit_per_min is not None else _int_env("RATE_LIMIT_PER_MIN", 0),
+        trust_proxy=os.environ.get("TRUST_PROXY", "").lower() in ("1", "true", "yes"),
+    )
+    app.add_middleware(MetricsMiddleware, metrics=metrics)
     app.add_middleware(RequestContextMiddleware)
 
     @app.exception_handler(ServiceError)
