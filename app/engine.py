@@ -156,9 +156,12 @@ def fit(
         n_jobs=1,
     )
     forest.fit(z)
+    coherence = fit_coherence(z, trim=min(0.1, 2 * contamination + 0.01))
     train_scores = -forest.score_samples(z)
+    if coherence is not None:
+        train_scores = np.maximum(train_scores, coherence_scores(coherence, z))
     quantile = float(np.quantile(train_scores, 1.0 - contamination))
-    threshold = max(ABS_THRESHOLD_FLOOR, quantile)
+    threshold = max(threshold_floor, quantile)
     indicator_rate = np.zeros(len(columns))
     for j, kind in enumerate(kinds):
         if kind == "missing":
