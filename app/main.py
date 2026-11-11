@@ -128,7 +128,9 @@ def create_app(
         responses=errors,
     )
     def train(req: TrainRequest) -> ModelInfo:
-        return svc.train(req)
+        info = svc.train(req)
+        metrics.inc("ds_ai_models_trained_total")
+        return info
 
     @app.get("/v1/models", response_model=list[ModelInfo], tags=["models"],
              dependencies=[Depends(require_api_key)])
