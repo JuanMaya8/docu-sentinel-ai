@@ -1,11 +1,13 @@
 """FastAPI wiring. All logic lives in `service.py` / `engine.py`.
 
 Run:  uvicorn app.main:app --reload --port 8000
-Env:  MODELS_DIR (persist models), AI_API_KEY (require X-API-Key), CORS_ORIGINS (comma list)
+Env:  MODELS_DIR (persist models), AI_API_KEY (require X-API-Key), CORS_ORIGINS (comma list),
+      MAX_BODY_MB (request body limit, default 64), LOG_LEVEL (default INFO)
 """
 
 from __future__ import annotations
 
+import logging
 import os
 
 from fastapi import Depends, FastAPI, Header, Request
