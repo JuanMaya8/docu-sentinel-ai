@@ -63,8 +63,10 @@ curl -s -X POST localhost:8000/v1/detect -H 'content-type: application/json' -d 
 ```
 app/
 ├── main.py        FastAPI: solo cablea HTTP ↔ servicio (CORS, API key, manejo de errores)
+├── middleware.py  ASGI puro: X-Request-ID + log JSON por petición, límite de tamaño del cuerpo (413)
 ├── service.py     AnomalyService: casos de uso (train, score, detect, list, get, delete) — sin framework
-├── engine.py      Motor: escalado robusto + Isolation Forest + guarda de extrapolación + contribuciones
+├── engine.py      Motor: escalado robusto (+log) + Isolation Forest + guarda de extrapolación + contribuciones
+├── coherence.py   Modelo de coherencia: Mahalanobis recortado + atribución por residuo condicional
 ├── explain_es.py  Plantillas de explicación en español
 ├── formatting.py  Formato es-CO (1.234,5) y fechas
 ├── store.py       ModelStore: registro en memoria + persistencia opcional (joblib)
