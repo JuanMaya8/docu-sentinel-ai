@@ -79,19 +79,27 @@ FastAPI; el resto se prueba sin servidor web.
 
 ### Cómo detecta anomalías
 1. **Escalado robusto** por columna: mediana y escala `IQR/1.349` (si el IQR es 0, desviación estándar; si no, 1).
-   Los valores nulos se imputan con la mediana y se recortan a ±50 desviaciones.
+   Los valores nulos se imputan con la mediana y se recortan a ±50 desviaciones. Las columnas numéricas **positivas
+   y asimétricas** (dinero, cantidades) se modelan en **escala log** (`should_log`, misma regla que el frontend).
 2. **Isolation Forest** (200 árboles, submuestra de 256, semilla fija → resultados reproducibles).
    `score = -score_samples` ∈ (0,1); ≈0.5 es normal, → 1 es muy anómalo.
-3. **Umbral**: `max(0.55, cuantil(1 - contamination) de los scores de entrenamiento)`. `contamination` por
-   defecto 1 %. El umbral absoluto evita marcar siempre un 1 % de filas en datos limpios.
+3. **Umbral**: `max(threshold_floor, cuantil(1 - contamination) de los scores de entrenamiento)`. `contamination`
+   por defecto 1 %, `threshold_floor` por defecto 0,55 (el frontend envía 0,65/0,60/0,55 según la sensibilidad).
+   El piso absoluto evita marcar siempre un 1 % de filas en datos limpios.
 4. **Guarda de extrapolación**: un Isolation Forest puntúa *bajo* los valores muy por fuera del rango visto
    en el entrenamiento (siguen la misma rama que el extremo de entrenamiento). En modo línea base eso dejaría pasar
    un total de 250 000 cuando el histórico llega a 3 000. Se mide cuánto excede cada valor el rango de entrenamiento
-   (en unidades robustas) y se mapea a `[0.5, 1)`; el score final es `max(IF, guarda)`.
+   (en unidades robustas) y se mapea a `[0.5, 1)`.
+4b. **Coherencia** (con ≥ 3 características y ≥ 50 filas): distancia de Mahalanobis sobre una covarianza recortada
+   (se excluyen las filas más lejanas y se reajusta). Detecta registros con valores plausibles uno a uno pero
+   imposibles juntos (p. ej. `total ≠ cantidad × precio`). El score final es `max(IF, guarda, coherencia)`,
+   acotado a `< 1`.
 5. **Explicación**: para cada fila marcada se calculan las desviaciones robustas por característica y se devuelven
    las `top_k` más fuertes, con mensaje en español, p. ej.
    *«El valor 250.000 en «total» está 41,3 desviaciones robustas por encima de la mediana (1.200).»*
-   Para `__missing` y `__rarity` hay plantillas propias.
+   Para `__missing` y `__rarity` hay plantillas propias. Si la fila rompe una relación entre campos se explica primero
+   la incoherencia (`kind: "coherence"`, con el valor esperado):
+   *«El valor 2.261 en «total» no es coherente con el resto del registro: según los demás campos se esperaría alrededor de 254,9.»*
 
 El contrato completo con los otros dos repos está en [`docs/CONTRACT.md`](docs/CONTRACT.md).
 
