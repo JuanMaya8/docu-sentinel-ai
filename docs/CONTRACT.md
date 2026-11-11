@@ -37,9 +37,21 @@ entre entrenamiento y puntuación.
 Valores desconocidos/no numéricos se envían como `null` (JSON no admite `NaN`).
 `schemaSignature` (opcional) = hash estable de `columns.join('|')` para comprobar compatibilidad rápido.
 
+**Modelo (idéntico en el frontend y en la IA):** escalado robusto (mediana/IQR) → escala **log** para columnas
+numéricas positivas y asimétricas (dinero, cantidades) → Isolation Forest + guarda de extrapolación + modelo de
+**coherencia** (Mahalanobis recortado, detecta relaciones rotas entre campos). Puntaje final = máximo de los tres,
+en (0,1). Una fila se marca si `score ≥ max(threshold_floor, cuantil 1-contamination del entrenamiento)`.
+
+| Sensibilidad (frontend) | `contamination` | `threshold_floor` |
+|-------------------------|-----------------|-------------------|
+| `low`                   | 0.005           | 0.65              |
+| `medium`                | 0.01            | 0.60              |
+| `high`                  | 0.03            | 0.55              |
+
 ## 3. Servicio IA (`docu-sentinel-ai`) — `http://localhost:8000`
 
-Cabecera opcional `X-API-Key` (si el servicio define `AI_API_KEY`).
+Cabecera opcional `X-API-Key` (si el servicio define `AI_API_KEY`). Toda respuesta trae `X-Request-ID`
+(se reutiliza el recibido si es seguro: `[A-Za-z0-9._-]{1,64}`). Cuerpo máximo `MAX_BODY_MB` (64 MB por defecto).
 
 | Método | Ruta                         | Descripción |
 |--------|------------------------------|-------------|
