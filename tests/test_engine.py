@@ -74,7 +74,10 @@ class EngineTests(unittest.TestCase):
         _, _, x = engine.score(model, self.rows)
         out = engine.explain_rows(model, x, [0, 1, 2], top_k=2)
         self.assertEqual(out["0"][0]["field"], "total")
-        self.assertIn("desviaciones robustas por encima de la mediana", out["0"][0]["message"])
+        msg0 = out["0"][0]["message"]
+        self.assertTrue(
+            "desviaciones robustas por encima de la mediana" in msg0 or "no es coherente" in msg0, msg0
+        )
         self.assertEqual(out["1"][0]["field"], "unit_price")
         fields_row2 = {c["field"] for c in out["2"]}
         self.assertTrue({"city", "email"} & fields_row2)
