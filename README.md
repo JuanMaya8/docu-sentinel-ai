@@ -9,7 +9,8 @@ español** de qué campos lo hacen raro.
 Permite **aprender de datos históricos**: se entrena una *línea base* con un archivo histórico y luego se puntúan
 archivos nuevos contra ella.
 
-> **Estado: v0.2.0 — funcional y verificado** (39 pruebas, integración real con el backend y E2E con el frontend).
+> **Estado: v0.3.0 — funcional, verificado y listo para Render** (48 pruebas con PostgreSQL real, integración con el
+> backend y E2E desde el frontend). Despliegue: [`DEPLOY.md`](DEPLOY.md).
 > Lee la sección *Qué está hecho y qué no*.
 
 ## Cómo ejecutarlo
