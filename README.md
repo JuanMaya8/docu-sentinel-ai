@@ -126,12 +126,12 @@ justificado en el README de `docu-sentinel-frontend`.
 * El modelo de coherencia es lineal (gaussiano): relaciones fuertemente no lineales que no se linealizan con la escala
   log pueden pasar desapercibidas.
 
-## Despliegue (más adelante)
-Imagen Docker lista (`Dockerfile`). Variables: `MODELS_DIR` (volumen persistente), `AI_API_KEY` (recomendado en
-producción; el backend lo envía como `X-API-Key`), `CORS_ORIGINS` (normalmente vacío: solo el backend llama a este servicio),
-`MAX_BODY_MB` (límite del cuerpo, 64 por defecto), `LOG_LEVEL` (`INFO`).
-Opciones simples: Render, Railway, Fly.io o Cloud Run (monta un volumen o usa un bucket si quieres que los modelos
-sobrevivan a los reinicios).
+## Despliegue (Render)
+Se despliega con el Blueprint del backend (PostgreSQL + IA + backend): ver [`DEPLOY.md`](DEPLOY.md).
+Variables: `DATABASE_URL` (modelos en PostgreSQL; imprescindible en Render gratuito porque su disco se borra),
+`AI_API_KEY` (el backend la envía como `X-API-Key`), `MODEL_TTL_DAYS`, `RATE_LIMIT_PER_MIN`, `TRUST_PROXY`,
+`METRICS_TOKEN`, `MAX_BODY_MB`, `LOG_LEVEL`, `CORS_ORIGINS` (normalmente vacío: solo el backend llama a este servicio).
+`PORT` lo pone la plataforma.
 
 ## Nombre de repositorio sugerido
 `docu-sentinel-ai`
