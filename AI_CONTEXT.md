@@ -89,6 +89,7 @@ comando `python3 -m unittest discover -s tests -t .` → 25 tests, OK, 4 omitido
 1. ~~Ejecutar y arreglar `tests/test_api.py` con fastapi real; ejecutar `docker build`.~~ ✅
 2. ~~Prueba de integración real con `docu-sentinel-backend` (entrenar línea base → puntuar).~~ ✅
 2b. ~~Paridad con el motor del frontend (log, coherencia, `threshold_floor`).~~ ✅
+2c. ~~Almacenamiento externo de modelos (PostgreSQL), caducidad, `/metrics`, rate limit.~~ ✅ (v0.3.0)
 3. Guardar tablas de frecuencia en el modelo + endpoint para puntuar `rarity` con frecuencias históricas
    (requiere decidir cómo enviar categorías sin textos originales, p. ej. hashes con sal).
 4. Evaluar con un dataset real (p. ej. facturas/inventario anonimizados): medir precisión/recobrado y recalibrar umbral.
