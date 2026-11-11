@@ -44,7 +44,17 @@ python -m pytest -q                       # o: python -m unittest discover -s te
 uvicorn app.main:app --reload --port 8000 # http://localhost:8000/docs
 ```
 
-## 5. Estado exacto (hasta dónde llegué)
+## 5. Estado exacto (actualizado — v0.2.0)
+
+**Hecho y VERIFICADO en Windows** (Python 3.11, FastAPI real; `python -m pytest -q` → **39 pruebas OK, 0 omitidas**):
+* Capa HTTP ejecutada: rutas, API key, CORS, errores, `X-Request-ID`, log JSON por petición, límite de cuerpo
+  (`MAX_BODY_MB`, 413 `PAYLOAD_TOO_LARGE`) — `app/middleware.py` (ASGI puro, sin FastAPI).
+* **Paridad con el frontend**: escala log (`should_log`), modelo de coherencia (`app/coherence.py`, Mahalanobis
+  recortado; contribuciones `kind: "coherence"` con `expected`), `threshold_floor` en `TrainRequest`/`ModelInfo`.
+* Modelos guardados con v0.1 siguen cargando (`FittedModel.__setstate__` rellena los campos nuevos).
+* Integración real con `docu-sentinel-backend` (servidores reales) y E2E con Playwright desde el frontend.
+
+Historial (v0.1):
 **Hecho y VERIFICADO** (ejecutado en el sandbox: Python 3.13, numpy 2.5.3, scikit-learn 1.9.1, pydantic 2.13.5,
 comando `python3 -m unittest discover -s tests -t .` → 25 tests, OK, 4 omitidos):
 * Escalado robusto, Isolation Forest, umbral, guarda de extrapolación, determinismo por semilla, manejo de `None`,
