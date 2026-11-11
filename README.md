@@ -132,6 +132,3 @@ Variables: `DATABASE_URL` (modelos en PostgreSQL; imprescindible en Render gratu
 `AI_API_KEY` (el backend la envía como `X-API-Key`), `MODEL_TTL_DAYS`, `RATE_LIMIT_PER_MIN`, `TRUST_PROXY`,
 `METRICS_TOKEN`, `MAX_BODY_MB`, `LOG_LEVEL`, `CORS_ORIGINS` (normalmente vacío: solo el backend llama a este servicio).
 `PORT` lo pone la plataforma.
-
-## Nombre de repositorio sugerido
-`docu-sentinel-ai`
