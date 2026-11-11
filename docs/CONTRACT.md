@@ -168,18 +168,21 @@ interface AnalysisSummary {
 ### Líneas base históricas (el backend las delega a la IA)
 | Método | Ruta | Cuerpo | Respuesta |
 |--------|------|--------|-----------|
-| POST | `/baselines` | `{ name, columns, kinds?, matrix, schemaSignature?, contamination?, seed? }` | `BaselineDto` (201) |
+| POST | `/baselines` | `{ name, columns, kinds?, matrix, schemaSignature?, contamination?, seed?, thresholdFloor? }` | `BaselineDto` (201) |
 | GET | `/baselines` | | `BaselineDto[]` |
 | GET | `/baselines/:id` | | `BaselineDto` |
 | DELETE | `/baselines/:id` | | 204 (también borra el modelo en la IA, best-effort) |
-| POST | `/baselines/:id/score` | `{ matrix, explain?, topK? }` (las columnas las pone el backend) | `ScoreResponse` de la IA |
+| POST | `/baselines/:id/score` | `{ matrix, explain?, topK?, schemaSignature? }` (las columnas las pone el backend) | `ScoreResponse` de la IA |
 
 ```ts
 interface BaselineDto {
   id: string; name: string; aiModelId: string; columns: string[]; kinds: string[];
   rows: number; threshold: number; trainedAt: string; schemaSignature?: string;
+  thresholdFloor?: number;      // 0.5..0.99, el que usó la IA al entrenar
 }
 ```
+`thresholdFloor` (0.5–0.99) se reenvía a la IA como `threshold_floor`. Si en `/score` se envía `schemaSignature`, la línea
+base tiene firma y no coinciden → `422 { code: "SCHEMA_MISMATCH" }` **sin** llamar a la IA.
 Si la IA no responde: `503 { code: "AI_UNAVAILABLE", message: "El servicio de IA no está disponible…" }`
 → el frontend cae al Isolation Forest local.
 
