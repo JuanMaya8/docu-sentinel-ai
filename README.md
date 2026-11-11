@@ -3,12 +3,14 @@
 Servicio de **detección de anomalías** del proyecto *Motor Inteligente para Detectar Inconsistencias en Documentos*.
 Es el tercer repositorio del sistema (junto a `docu-sentinel-frontend` y `docu-sentinel-backend`).
 
-Recibe matrices numéricas de características, entrena un **Isolation Forest** (scikit-learn) y devuelve, por registro,
-una puntuación de anomalía 0–1 con la **explicación en español** de qué campos lo hacen raro.
+Recibe matrices numéricas de características, entrena un **Isolation Forest** (scikit-learn) más un **modelo de
+coherencia** (Mahalanobis recortado) y devuelve, por registro, una puntuación de anomalía 0–1 con la **explicación en
+español** de qué campos lo hacen raro.
 Permite **aprender de datos históricos**: se entrena una *línea base* con un archivo histórico y luego se puntúan
 archivos nuevos contra ella.
 
-> **Estado: avance funcional (v0.1.0)**, no el proyecto terminado. Lee la sección *Qué está hecho y qué no*.
+> **Estado: v0.2.0 — funcional y verificado** (39 pruebas, integración real con el backend y E2E con el frontend).
+> Lee la sección *Qué está hecho y qué no*.
 
 ## Cómo ejecutarlo
 
