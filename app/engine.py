@@ -184,6 +184,9 @@ def fit(
         indicator_rate=indicator_rate,
         z_min=z.min(axis=0),
         z_max=z.max(axis=0),
+        log=log,
+        threshold_floor=threshold_floor,
+        coherence=coherence,
     )
     return model, train_scores
 
