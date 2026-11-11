@@ -195,8 +195,8 @@ class ModelStore:
             if model_id not in self._models:
                 raise ServiceError("MODEL_NOT_FOUND", "El modelo solicitado no existe.", 404)
             del self._models[model_id]
-            if self._dir:
-                (self._dir / f"{model_id}.joblib").unlink(missing_ok=True)
+            if self._backend is not None:
+                self._backend.delete(model_id)
 
     def items(self) -> list[tuple[str, FittedModel]]:
         with self._lock:
