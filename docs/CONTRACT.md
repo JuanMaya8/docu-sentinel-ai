@@ -89,14 +89,26 @@ schema_signature, engine }` (`engine = "sklearn-isolation-forest+coherence"`).
 `scores` ∈ (0,1), mayor = más anómalo. `contributions` solo trae las filas pedidas por `explain`
 (clave = índice de fila como texto). `DetectResponse` = `ScoreResponse` + `rows` + `engine`.
 
+`Contribution.kind` ∈ `numeric | date | missing | rarity | coherence`. Con `coherence` el valor del campo no encaja
+con lo que predicen los demás campos del registro; `deviation` es el residuo condicional y `expected` el valor
+esperado (solo para `coherence`):
+```json
+{ "column":"total","field":"total","kind":"coherence","value":2261,"median":1255.1,"deviation":37.5,"expected":254.9,
+  "message":"El valor 2.261 en «total» no es coherente con el resto del registro: según los demás campos se esperaría alrededor de 254,9." }
+```
+Las incoherencias solo se reportan cuando todos los valores de la fila están dentro del rango de entrenamiento; si un
+valor es extremo por sí mismo, se explica ese valor (`numeric`/`date`/`rarity`).
+
 **Errores**: `{ "code": "...", "message": "<español>" }` — códigos: `MODEL_NOT_FOUND` (404), `SCHEMA_MISMATCH` (422),
-`INVALID_TRAINING_DATA` (422), `MODEL_LIMIT` (409), `UNAUTHORIZED` (401). Los errores de validación de forma
+`INVALID_TRAINING_DATA` (422), `MODEL_LIMIT` (409), `UNAUTHORIZED` (401), `PAYLOAD_TOO_LARGE` (413). Los errores de validación de forma
 (`422`) siguen el formato estándar de FastAPI (`detail[]`).
 
 ## 4. Backend (`docu-sentinel-backend`) — `http://localhost:3001/api/v1`
 
 Swagger en `http://localhost:3001/docs`. Cabecera opcional `X-API-Key` para escrituras (si `API_KEY` está definido).
-Errores: `{ "statusCode": 400, "code": "VALIDATION_ERROR", "message": "..." }`.
+Errores: `{ "statusCode": 400, "code": "VALIDATION_ERROR", "message": "..." }`. Toda respuesta trae `X-Request-ID`
+(expuesta por CORS). Retención opcional: con `RETENTION_DAYS=N` el backend borra los reportes con más de N días
+(emite `analysis.deleted` por cada uno).
 
 ### Tipos compartidos
 ```ts
