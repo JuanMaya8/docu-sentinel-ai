@@ -17,14 +17,17 @@ from typing import Sequence
 import numpy as np
 from sklearn.ensemble import IsolationForest
 
-from .explain_es import describe_contribution
+from .coherence import CoherenceModel, attribution, coherence_scores, fit_coherence
+from .explain_es import describe_coherence, describe_contribution
 from .schemas import FeatureKind, infer_kind
 
-ENGINE_NAME = "sklearn-isolation-forest"
+ENGINE_NAME = "sklearn-isolation-forest+coherence"
 MAX_ABS_Z = 50.0
 ABS_THRESHOLD_FLOOR = 0.55  # an Isolation Forest score near 0.5 means "normal"
 UNSEEN_INDICATOR_EXT = 3.0  # a field that was never empty in training is now empty
 EXT_SCALE = 4.0  # robust-z units beyond the training range for the guard to reach ~0.63
+COHERENCE_MIN_T = 3.0  # conditional residual needed to blame a field for a broken relation
+MAX_SCORE = 0.999999  # the contract promises scores in the open interval (0, 1)
 
 
 @dataclass
