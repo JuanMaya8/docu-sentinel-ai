@@ -1,14 +1,24 @@
-"""Model store: in-memory registry with optional on-disk persistence (joblib).
+"""Model store: in-memory registry with optional persistence.
 
-Security note: joblib uses pickle. Only load files written by this service from a
-directory that untrusted parties cannot write to.
+Backends (picked by `ModelStore.from_env()`):
+  * DATABASE_URL set  -> PostgreSQL table `ds_ai_models` (needed on hosts with an ephemeral disk, e.g. Render free)
+  * MODELS_DIR set    -> one joblib file per model on disk
+  * neither           -> memory only
+MODEL_TTL_DAYS > 0 deletes models older than that many days (on boot and before each new model).
+
+Security note: models are serialised with joblib/pickle. Only load them from a directory or database that untrusted
+parties cannot write to.
 """
 
 from __future__ import annotations
 
+import io
+import os
 import threading
 import uuid
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Protocol
 
 import joblib
 
