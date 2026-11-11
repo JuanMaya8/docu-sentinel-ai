@@ -19,16 +19,20 @@ Requisitos: **Python 3.11+** (probado con 3.13).
 ```bash
 # 1. Entorno virtual
 python -m venv .venv
-source .venv/bin/activate            # Windows: .venv\Scripts\activate
+# Windows PowerShell: .\.venv\Scripts\Activate.ps1
+# Windows CMD:        .venv\Scripts\activate.bat
+# Linux/macOS:        source .venv/bin/activate
 
 # 2. Dependencias (incluye pytest y httpx para las pruebas)
-pip install -r requirements-dev.txt
+python -m pip install -r requirements-dev.txt
 
 # 3. Configuración (opcional)
-cp .env.example .env                 # MODELS_DIR=./models persiste los modelos entre reinicios
+# Windows PowerShell: Copy-Item .env.example .env
+# Linux/macOS:        cp .env.example .env
+# MODELS_DIR=./models persiste los modelos entre reinicios
 
 # 4. Levantar el servicio
-uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000
 #   Swagger interactivo:  http://localhost:8000/docs
 #   Salud:                http://localhost:8000/health
 
