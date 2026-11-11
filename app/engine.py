@@ -200,9 +200,12 @@ def score(
     x = to_array(matrix, len(model.columns))
     if x.shape[0] == 0:
         return np.zeros(0), np.zeros(0, dtype=bool), x
-    z = _transform(x, model.median, model.scale)
+    z = _z(model, x)
     scores = -model.forest.score_samples(z)
     scores = np.maximum(scores, _extrapolation_score(model, z))
+    if model.coherence is not None:
+        scores = np.maximum(scores, coherence_scores(model.coherence, z))
+    scores = np.minimum(scores, MAX_SCORE)
     limit = model.threshold if threshold is None else threshold
     return scores, scores >= limit, x
 
