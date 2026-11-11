@@ -127,8 +127,8 @@ justificado en el README de `docu-sentinel-frontend`.
   log pueden pasar desapercibidas.
 
 ## Despliegue (Render)
-Se despliega con el Blueprint del backend (PostgreSQL + IA + backend): ver [`DEPLOY.md`](DEPLOY.md).
-Variables: `DATABASE_URL` (modelos en PostgreSQL; imprescindible en Render gratuito porque su disco se borra),
+Se despliega en Render con el Blueprint del backend (IA + backend), con la base de datos en Neon: ver [`DEPLOY.md`](DEPLOY.md).
+Variables: `DATABASE_URL` (connection string de Neon; imprescindible en Render gratuito porque su disco se borra),
 `AI_API_KEY` (el backend la envía como `X-API-Key`), `MODEL_TTL_DAYS`, `RATE_LIMIT_PER_MIN`, `TRUST_PROXY`,
 `METRICS_TOKEN`, `MAX_BODY_MB`, `LOG_LEVEL`, `CORS_ORIGINS` (normalmente vacío: solo el backend llama a este servicio).
 `PORT` lo pone la plataforma.
