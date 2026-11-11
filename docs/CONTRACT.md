@@ -118,7 +118,7 @@ Errores: `{ "statusCode": 400, "code": "VALIDATION_ERROR", "message": "..." }`. 
 ### Tipos compartidos
 ```ts
 type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
-type FileFormat = 'csv' | 'tsv' | 'json' | 'ndjson' | 'pdf';
+type FileFormat = 'csv' | 'tsv' | 'json' | 'ndjson' | 'pdf' | 'xlsx';
 type ProcessingMode = 'main' | 'worker' | 'pool';
 type AnomalyType =
   | 'duplicate_exact' | 'duplicate_key' | 'duplicate_near' | 'missing_field' | 'empty_record'
