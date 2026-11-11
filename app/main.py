@@ -13,11 +13,17 @@ import os
 
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 
 from . import __version__
 from .errors import ServiceError
-from .middleware import BodySizeLimitMiddleware, RequestContextMiddleware
+from .middleware import (
+    BodySizeLimitMiddleware,
+    Metrics,
+    MetricsMiddleware,
+    RateLimitMiddleware,
+    RequestContextMiddleware,
+)
 from .schemas import (
     DetectRequest,
     DetectResponse,
