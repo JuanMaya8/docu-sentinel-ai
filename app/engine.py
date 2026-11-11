@@ -309,32 +309,33 @@ def explain_rows(
                 strength = min(MAX_ABS_Z, -math.log(max(rate, 1e-4)) * 1.5)
                 candidates.append((strength, j, strength))
                 continue
-            if np.isnan(value):
-                continue
-            z = float((value - model.median[j]) / model.scale[j])
-            z = max(-MAX_ABS_Z, min(MAX_ABS_Z, z))
+            if np.isnan(xs[i, j]):
+                continue  # empty, or not positive in a log-scaled column
+            z = float(z_all[i, j])
             if kind == "rarity" and z <= 0:
                 continue  # common categories are not suspicious
+            if abs(z) < 2.5 and items:
+                continue  # keep only values that are unusual in themselves
             candidates.append((abs(z), j, z))
         candidates.sort(key=lambda c: (-c[0], c[1]))
-        items = []
-        for _, j, dev in candidates[:top_k]:
+        for _, j, dev in candidates[: max(0, top_k - len(items))]:
             kind = model.kinds[j]
             col = model.columns[j]
             value = None if np.isnan(row[j]) else float(row[j])
+            median = _median_in_units(model, j)
             items.append(
                 {
                     "column": col,
                     "field": _field_name(col),
                     "kind": kind,
                     "value": value,
-                    "median": float(model.median[j]),
+                    "median": median,
                     "deviation": float(dev),
                     "message": describe_contribution(
                         field=_field_name(col),
                         kind=kind,
                         value=value,
-                        median=float(model.median[j]),
+                        median=median,
                         deviation=float(dev),
                         indicator_rate=float(model.indicator_rate[j]),
                     ),
