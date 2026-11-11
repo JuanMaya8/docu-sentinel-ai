@@ -126,6 +126,7 @@ class HealthResponse(BaseModel):
     version: str
     engine: str
     models: int
+    store: Literal["memory", "disk", "postgres"] = "memory"
 
 
 class ErrorResponse(BaseModel):
