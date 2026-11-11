@@ -213,7 +213,20 @@ Si la IA no responde: `503 { code: "AI_UNAVAILABLE", message: "El servicio de IA
 
 ### Tiempo real (socket.io)
 Namespace `/realtime` (ruta por defecto `/socket.io`). Eventos servidor→cliente:
-`analysis.saved` (`AnalysisSummary`), `analysis.deleted` (`{id}`), `baseline.trained` (`BaselineDto`), `baseline.deleted` (`{id}`).
+`analysis.saved` (`AnalysisSummary`), `analysis.deleted` (`{id}`), `baseline.trained` (`BaselineDto`, también al
+reentrenar), `baseline.deleted` (`{id}`). Con cuentas activas el cliente se conecta con `io(url, { auth: { token } })`
+y solo recibe **sus** eventos; sin token recibe `auth.error` y se desconecta.
 
 ### Salud
-`GET /api/v1/health` → `{ status: "ok", ai: "up" | "down", version }`.
+`GET /api/v1/health` → `{ status: "ok", ai: "up" | "down", version, auth: boolean, store: "postgres" | "files" }`.
+`GET /metrics` (fuera del prefijo `/api/v1`) → Prometheus; `Authorization: Bearer <METRICS_TOKEN>` si está definido.
+
+### Webhook opcional
+Con `WEBHOOK_URL`, al guardar un reporte con hallazgos de riesgo ≥ `WEBHOOK_MIN_RISK` (`critical` por defecto) el
+backend hace `POST` con `{ event: "analysis.flagged", minRisk, analysis: { id, createdAt, fileName, rows, findingsCount,
+recordsAffected, byRisk } }`. Con `WEBHOOK_SECRET` añade `X-DocuSentinel-Signature: sha256=<HMAC-SHA256 del cuerpo>`.
+
+### Almacenamiento
+`DATABASE_URL` → PostgreSQL (`ds_analyses`, `ds_findings` con índices por riesgo/tipo/registro, `ds_kv` para líneas base
+y usuarios; el esquema se crea solo). Sin `DATABASE_URL` → archivos JSON en `DATA_DIR`. Mismo comportamiento (las dos
+implementaciones pasan las mismas pruebas de contrato).
