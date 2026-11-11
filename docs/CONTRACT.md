@@ -101,7 +101,11 @@ Las incoherencias solo se reportan cuando todos los valores de la fila están de
 valor es extremo por sí mismo, se explica ese valor (`numeric`/`date`/`rarity`).
 
 **Errores**: `{ "code": "...", "message": "<español>" }` — códigos: `MODEL_NOT_FOUND` (404), `SCHEMA_MISMATCH` (422),
-`INVALID_TRAINING_DATA` (422), `MODEL_LIMIT` (409), `UNAUTHORIZED` (401), `PAYLOAD_TOO_LARGE` (413). Los errores de validación de forma
+`INVALID_TRAINING_DATA` (422), `MODEL_LIMIT` (409), `UNAUTHORIZED` (401), `PAYLOAD_TOO_LARGE` (413),
+`RATE_LIMITED` (429, con `Retry-After`; solo si `RATE_LIMIT_PER_MIN` > 0).
+
+Persistencia de modelos: `DATABASE_URL` → tabla `ds_ai_models` en PostgreSQL; si no, `MODELS_DIR` (disco) o memoria.
+`MODEL_TTL_DAYS` borra modelos viejos (al arrancar y antes de cada entrenamiento). Los errores de validación de forma
 (`422`) siguen el formato estándar de FastAPI (`detail[]`).
 
 ## 4. Backend (`docu-sentinel-backend`) — `http://localhost:3001/api/v1`
