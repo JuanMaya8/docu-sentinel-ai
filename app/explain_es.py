@@ -34,3 +34,12 @@ def describe_contribution(
         f"El valor {shown} en «{field}» está {fmt_number(abs(deviation), 1)} desviaciones "
         f"robustas {direction} de la mediana ({ref})."
     )
+
+
+def describe_coherence(field: str, feature_kind: str, value: float, expected: float) -> str:
+    """A field whose value does not fit what the other fields of the same record predict."""
+    fmt = fmt_epoch_days if feature_kind == "date" else fmt_number
+    return (
+        f"El valor {fmt(value)} en «{field}» no es coherente con el resto del registro: "
+        f"según los demás campos se esperaría alrededor de {fmt(expected)}."
+    )
