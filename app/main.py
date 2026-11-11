@@ -50,9 +50,20 @@ def _max_body_bytes() -> int:
     return int(mb * 1024 * 1024)
 
 
-def create_app(service: AnomalyService | None = None, max_body_bytes: int | None = None) -> FastAPI:
+def _int_env(name: str, default: int) -> int:
+    try:
+        return int(os.environ.get(name, "") or default)
+    except ValueError:
+        return default
+
+
+def create_app(
+    service: AnomalyService | None = None,
+    max_body_bytes: int | None = None,
+    rate_limit_per_min: int | None = None,
+) -> FastAPI:
     logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO").upper(), format="%(message)s")
-    svc =service if service is not None else AnomalyService(ModelStore(os.environ.get("MODELS_DIR") or None))
+    svc = service if service is not None else AnomalyService(ModelStore.from_env())
     api_key = os.environ.get("AI_API_KEY") or None
 
     async def require_api_key(x_api_key: str | None = Header(default=None)) -> None:
