@@ -33,6 +33,7 @@ class AnomalyService:
             kinds=m.kinds,
             rows=m.rows,
             threshold=round(m.threshold, 6),
+            threshold_floor=m.threshold_floor,
             contamination=m.contamination,
             seed=m.seed,
             trained_at=m.trained_at,
