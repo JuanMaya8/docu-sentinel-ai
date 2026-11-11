@@ -112,6 +112,13 @@ def create_app(
     def health() -> HealthResponse:
         return svc.health()
 
+    @app.get("/metrics", include_in_schema=False)
+    def scrape(authorization: str | None = Header(default=None)) -> PlainTextResponse:
+        if metrics_token and (authorization or "").removeprefix("Bearer ").strip() != metrics_token:
+            raise ServiceError("UNAUTHORIZED", "Token de métricas inválido.", 401)
+        body = metrics.render({"ds_ai_models": float(len(svc.store))})
+        return PlainTextResponse(body, media_type="text/plain; version=0.0.4; charset=utf-8")
+
     @app.post(
         "/v1/models",
         response_model=ModelInfo,
