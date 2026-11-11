@@ -170,6 +170,7 @@ El frontend guarda el token en `localStorage` y en la cookie `ds_token` (para qu
 | GET | `/analyses/:id` | | `AnalysisDetail` (= summary + `columns`) |
 | GET | `/analyses/:id/findings` | `?risk=high&type=out_of_range&field=total&q=texto&sort=score:desc&limit=100&offset=0` | `{ items: FindingDto[], total }` |
 | GET | `/analyses/:id/export.csv` | | CSV UTF-8 con BOM, cabeceras: Registro, Tipo de anomalía, Nivel de riesgo, Campo afectado, Explicación |
+| GET | `/analyses/:id/export.json` | | `{ analysis: AnalysisDetail, findings: FindingDto[] }` (todos, por puntaje) |
 | DELETE | `/analyses/:id` | | 204 |
 
 ```ts
