@@ -55,7 +55,8 @@ Cabecera opcional `X-API-Key` (si el servicio define `AI_API_KEY`). Toda respues
 
 | Método | Ruta                         | Descripción |
 |--------|------------------------------|-------------|
-| GET    | `/health`                    | `{status:"ok", version, engine, models}` |
+| GET    | `/health`                    | `{status:"ok", version, engine, models, store: "memory"\|"disk"\|"postgres"}` |
+| GET    | `/metrics`                   | Prometheus (texto). `Authorization: Bearer <METRICS_TOKEN>` si está definido |
 | POST   | `/v1/models`                 | Entrena y guarda un modelo (línea base) → `ModelInfo` (201) |
 | GET    | `/v1/models`                 | Lista `ModelInfo[]` |
 | GET    | `/v1/models/{id}`            | `ModelInfo` |
