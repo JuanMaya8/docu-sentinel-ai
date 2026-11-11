@@ -203,6 +203,7 @@ interface BaselineDto {
   id: string; name: string; aiModelId: string; columns: string[]; kinds: string[];
   rows: number; threshold: number; trainedAt: string; schemaSignature?: string;
   thresholdFloor?: number;      // 0.5..0.99, el que usó la IA al entrenar
+  version?: number;             // 1 al crear, +1 en cada reentrenamiento
 }
 ```
 `thresholdFloor` (0.5–0.99) se reenvía a la IA como `threshold_floor`. Si en `/score` se envía `schemaSignature`, la línea
