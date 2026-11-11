@@ -49,6 +49,17 @@ class FittedModel:
     # training range in robust-z space, used by the extrapolation guard
     z_min: np.ndarray = field(default_factory=lambda: np.zeros(0))
     z_max: np.ndarray = field(default_factory=lambda: np.zeros(0))
+    # per feature: modelled in log space (positive, right-skewed values such as money)
+    log: np.ndarray = field(default_factory=lambda: np.zeros(0, dtype=bool))
+    threshold_floor: float = ABS_THRESHOLD_FLOOR
+    coherence: CoherenceModel | None = None
+
+    def __setstate__(self, state: dict) -> None:
+        """Models pickled by older versions lack the newer fields: fill safe defaults."""
+        state.setdefault("log", np.zeros(len(state.get("columns", [])), dtype=bool))
+        state.setdefault("threshold_floor", ABS_THRESHOLD_FLOOR)
+        state.setdefault("coherence", None)
+        self.__dict__.update(state)
 
 
 def to_array(matrix: Sequence[Sequence[float | None]], width: int) -> np.ndarray:
