@@ -78,10 +78,15 @@ class DetectRequest(TrainRequest):
 class Contribution(BaseModel):
     column: str
     field: str
-    kind: FeatureKind
+    kind: ContributionKind
     value: float | None
     median: float
-    deviation: float = Field(description="Signed robust z-score; strength for missing/rarity")
+    deviation: float = Field(
+        description="Signed robust z-score; strength for missing/rarity; conditional residual for coherence"
+    )
+    expected: float | None = Field(
+        default=None, description="Only for kind == 'coherence': the value the other fields predict"
+    )
     message: str = Field(description="Spanish explanation")
 
 
