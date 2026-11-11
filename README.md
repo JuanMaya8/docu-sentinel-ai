@@ -111,22 +111,23 @@ justificado en el README de `docu-sentinel-frontend`.
 
 | Estado | Elemento |
 |--------|----------|
-| ✅ Verificado (21 pruebas ejecutadas + 4 de API omitidas por falta de fastapi; Python 3.13, scikit-learn 1.9.1, numpy 2.5.3, pydantic 2.13.5) | Motor, servicio, almacén con persistencia, explicaciones, formato es-CO, validación de esquema |
-| ⚠️ Escrito pero **no ejecutado** en el entorno donde se creó (no había `fastapi` instalable) | `app/main.py` (rutas FastAPI), `tests/test_api.py` (se omiten solos si falta fastapi), `Dockerfile` |
-| ❌ No hecho | Autenticación real por usuario, modelos alternativos (autoencoder, LOF), reentrenamiento incremental, tablas de frecuencia de categorías dentro de la línea base, métricas de calidad sobre datos reales, observabilidad |
-
-Tras `pip install -r requirements-dev.txt`, `python -m pytest -q` ejecuta además `tests/test_api.py`; si algo falla ahí,
-es lo primero que hay que corregir.
+| ✅ Verificado — `python -m pytest -q` → **39 pruebas** (Python 3.11, FastAPI real) | Motor, coherencia, escala log, `threshold_floor`, compatibilidad con modelos guardados por v0.1, servicio, almacén con persistencia, explicaciones, formato es-CO, validación de esquema, rutas FastAPI, API key, `X-Request-ID`, límite de cuerpo (413) |
+| ✅ Verificado — integración real | `uvicorn` + `docu-sentinel-backend` real: entrenar línea base → puntuar → `SCHEMA_MISMATCH` → borrar; E2E con Playwright desde el frontend |
+| ❌ No hecho | Autenticación por usuario, modelos alternativos (autoencoder, LOF), reentrenamiento incremental, tablas de frecuencia de categorías dentro de la línea base, métricas de calidad sobre datos reales, almacenamiento externo de modelos (S3/GCS) |
 
 ## Limitaciones conocidas
 * Las pruebas usan datos **sintéticos**. No hay validación con datos reales de una empresa.
 * `joblib` usa *pickle*: solo carga modelos de un directorio propio y no accesible a terceros.
 * Un modelo entrenado con pocas filas (< 200) es poco estable; el servicio exige ≥ 20 y recomienda ≥ 1 000.
-* `rarity` en modo línea base se calcula en el frontend con las frecuencias del archivo nuevo, no con las del histórico.
+* `rarity` en modo línea base se calcula en el frontend con las frecuencias del archivo nuevo, no con las del histórico
+  (guardar las categorías exigiría enviar textos originales, lo que el contrato evita a propósito).
+* El modelo de coherencia es lineal (gaussiano): relaciones fuertemente no lineales que no se linealizan con la escala
+  log pueden pasar desapercibidas.
 
 ## Despliegue (más adelante)
 Imagen Docker lista (`Dockerfile`). Variables: `MODELS_DIR` (volumen persistente), `AI_API_KEY` (recomendado en
-producción; el backend lo envía como `X-API-Key`), `CORS_ORIGINS` (normalmente vacío: solo el backend llama a este servicio).
+producción; el backend lo envía como `X-API-Key`), `CORS_ORIGINS` (normalmente vacío: solo el backend llama a este servicio),
+`MAX_BODY_MB` (límite del cuerpo, 64 por defecto), `LOG_LEVEL` (`INFO`).
 Opciones simples: Render, Railway, Fly.io o Cloud Run (monta un volumen o usa un bucket si quieres que los modelos
 sobrevivan a los reinicios).
 
