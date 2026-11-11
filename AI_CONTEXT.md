@@ -50,7 +50,7 @@ uvicorn app.main:app --reload --port 8000 # http://localhost:8000/docs
 * `app/middleware.py`: `Metrics` + `MetricsMiddleware` (`GET /metrics`, `METRICS_TOKEN`) y `RateLimitMiddleware`
   (`RATE_LIMIT_PER_MIN`, por API key o IP; `TRUST_PROXY=1` detrás de Render).
 * `tests/test_store_ops.py`: con `TEST_DATABASE_URL=postgres://…` prueba PostgreSQL real (48 pruebas en total).
-* Despliegue: `DEPLOY.md` + Blueprint en `docu-sentinel-backend/render.yaml`. CI con servicio `postgres`.
+* Despliegue: `DEPLOY.md` + Blueprint en `docu-sentinel-backend/render.yaml` (Render) con la base de datos en Neon. CI con servicio `postgres`.
 
 ## 5. Estado exacto (v0.2.0)
 
