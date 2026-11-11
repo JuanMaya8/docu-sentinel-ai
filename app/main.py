@@ -31,8 +31,21 @@ from .service import AnomalyService
 from .store import ModelStore
 
 
-def create_app(service: AnomalyService | None = None) -> FastAPI:
-    svc = service if service is not None else AnomalyService(ModelStore(os.environ.get("MODELS_DIR") or None))
+DEFAULT_MAX_BODY_MB = 64
+
+
+def _max_body_bytes() -> int:
+    raw = os.environ.get("MAX_BODY_MB", "").strip()
+    try:
+        mb = float(raw) if raw else DEFAULT_MAX_BODY_MB
+    except ValueError:
+        mb = DEFAULT_MAX_BODY_MB
+    return int(mb * 1024 * 1024)
+
+
+def create_app(service: AnomalyService | None = None, max_body_bytes: int | None = None) -> FastAPI:
+    logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO").upper(), format="%(message)s")
+    svc =service if service is not None else AnomalyService(ModelStore(os.environ.get("MODELS_DIR") or None))
     api_key = os.environ.get("AI_API_KEY") or None
 
     async def require_api_key(x_api_key: str | None = Header(default=None)) -> None:
