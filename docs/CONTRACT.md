@@ -68,9 +68,13 @@ Cabecera opcional `X-API-Key` (si el servicio define `AI_API_KEY`). Toda respues
 { "name": "Facturas 2025", "columns": ["quantity","unit_price","city__rarity"],
   "kinds": ["numeric","numeric","rarity"],            // opcional (se infiere por sufijo)
   "matrix": [[3, 120.5, 0.4], [2, null, 0.7]],        // máx. 200 000 filas / 8 000 000 celdas
-  "contamination": 0.01, "n_estimators": 200, "seed": 42, "schema_signature": "ab12…" }
+  "contamination": 0.01, "n_estimators": 200, "seed": 42, "schema_signature": "ab12…",
+  "threshold_floor": 0.6 }                            // opcional, 0.5 ≤ x < 1, por defecto 0.55
 ```
 `DetectRequest` añade `explain` y `top_k`.
+
+**ModelInfo**: `{ model_id, name, columns, kinds, rows, threshold, threshold_floor, contamination, seed, trained_at,
+schema_signature, engine }` (`engine = "sklearn-isolation-forest+coherence"`).
 
 **ScoreRequest**: `{ columns, kinds?, matrix, explain: "flagged"|"all"|"none" = "flagged", top_k: 1..10 = 3, threshold?: 0..1 }`
 
