@@ -1,19 +1,37 @@
-# docu-sentinel-ai
+<div align="center">
 
-Servicio de **detección de anomalías** del proyecto *Motor Inteligente para Detectar Inconsistencias en Documentos*.
-Es el tercer repositorio del sistema (junto a `docu-sentinel-frontend` y `docu-sentinel-backend`).
+# 🛡️ Docu Sentinel — Servicio de IA
 
-Recibe matrices numéricas de características, entrena un **Isolation Forest** (scikit-learn) más un **modelo de
-coherencia** (Mahalanobis recortado) y devuelve, por registro, una puntuación de anomalía 0–1 con la **explicación en
-español** de qué campos lo hacen raro.
-Permite **aprender de datos históricos**: se entrena una *línea base* con un archivo histórico y luego se puntúan
-archivos nuevos contra ella.
+**Motor inteligente para detectar inconsistencias en documentos**
 
-> **Estado: v0.3.0 — funcional, verificado y listo para Render** (48 pruebas con PostgreSQL real, integración con el
-> backend y E2E desde el frontend). Despliegue: [`DEPLOY.md`](DEPLOY.md).
-> Lee la sección *Qué está hecho y qué no*.
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white) ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?logo=scikitlearn&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 
-## Cómo ejecutarlo
+[Frontend](https://github.com/JuanMaya8/docu-sentinel-frontend) · [Backend](https://github.com/JuanMaya8/docu-sentinel-backend) · **IA**
+
+</div>
+
+---
+
+Servicio de **detección de anomalías** del sistema Docu Sentinel. Recibe matrices numéricas de características,
+entrena un **Isolation Forest** (scikit-learn) más un **modelo de coherencia** (Mahalanobis recortado) y devuelve, por
+registro, una puntuación de anomalía 0–1 con la **explicación en español** de qué campos lo hacen raro.
+
+También permite **aprender de datos históricos**: se entrena una *línea base* con un archivo histórico y luego se
+puntúan los archivos nuevos contra ella.
+
+> **v0.3.0** · 48 pruebas automáticas (incluye PostgreSQL real) · integración verificada con el backend y el frontend ·
+> desplegado en **Render** con base de datos en **Neon** ([`DEPLOY.md`](DEPLOY.md)).
+
+
+**Contenido**
+
+- [Cómo ejecutarlo](#-cómo-ejecutarlo)
+- [Arquitectura](#-arquitectura)
+- [Estado y pruebas](#-estado-y-pruebas)
+- [Limitaciones conocidas](#-limitaciones-conocidas)
+- [Despliegue (Render)](#-despliegue-render)
+
+## 🚀 Cómo ejecutarlo
 
 Requisitos: **Python 3.11+** (probado con 3.13).
 
@@ -59,7 +77,7 @@ PY
 curl -s -X POST localhost:8000/v1/detect -H 'content-type: application/json' -d @/tmp/body.json | head -c 600
 ```
 
-## Arquitectura
+## 🏗️ Arquitectura
 
 ```
 app/
@@ -108,16 +126,16 @@ El contrato completo con los otros dos repos está en [`docs/CONTRACT.md`](docs/
 No aplica a este repo (es una API JSON). El patrón de renderizado del sistema (CSR + SSG + SSR por ruta) está
 justificado en el README de `docu-sentinel-frontend`.
 
-## Qué está hecho y qué no
+## ✅ Estado y pruebas
 
 | Estado | Elemento |
 |--------|----------|
 | ✅ Verificado — `python -m pytest -q` → **48 pruebas** (Python 3.11, FastAPI real; las de PostgreSQL con `TEST_DATABASE_URL`) | Motor, coherencia, escala log, `threshold_floor`, compatibilidad con modelos guardados por v0.1, servicio, almacén en memoria / disco / **PostgreSQL**, caducidad de modelos (`MODEL_TTL_DAYS`), explicaciones, formato es-CO, validación de esquema, rutas FastAPI, API key, `X-Request-ID`, límite de cuerpo (413), **rate limit (429)**, **`/metrics` Prometheus** |
 | ✅ Verificado — integración real | `uvicorn` + `docu-sentinel-backend` real: entrenar línea base → puntuar → `SCHEMA_MISMATCH` → borrar; E2E con Playwright desde el frontend |
 | ✅ Verificado — imagen Docker | `docker build` + arranque con `PORT=10000` y `DATABASE_URL` (igual que Render) |
-| ❌ No hecho (decisiones de diseño o requieren datos reales) | Modelos alternativos (autoencoder, LOF), reentrenamiento *incremental* (el backend reentrena creando un modelo nuevo), tablas de frecuencia de categorías dentro de la línea base (exigiría enviar textos originales), métricas de calidad sobre datos reales de una organización |
+| 🔭 Trabajo futuro | Modelos alternativos (autoencoder, LOF), reentrenamiento *incremental* (el backend reentrena creando un modelo nuevo), tablas de frecuencia de categorías dentro de la línea base (exigiría enviar textos originales), métricas de calidad sobre datos reales de una organización |
 
-## Limitaciones conocidas
+## ⚠️ Limitaciones conocidas
 * Las pruebas usan datos **sintéticos**. No hay validación con datos reales de una empresa.
 * `joblib` usa *pickle*: solo carga modelos de un directorio propio y no accesible a terceros.
 * Un modelo entrenado con pocas filas (< 200) es poco estable; el servicio exige ≥ 20 y recomienda ≥ 1 000.
@@ -126,7 +144,7 @@ justificado en el README de `docu-sentinel-frontend`.
 * El modelo de coherencia es lineal (gaussiano): relaciones fuertemente no lineales que no se linealizan con la escala
   log pueden pasar desapercibidas.
 
-## Despliegue (Render)
+## ☁️ Despliegue (Render)
 Se despliega en Render con el Blueprint del backend (IA + backend), con la base de datos en Neon: ver [`DEPLOY.md`](DEPLOY.md).
 Variables: `DATABASE_URL` (connection string de Neon; imprescindible en Render gratuito porque su disco se borra),
 `AI_API_KEY` (el backend la envía como `X-API-Key`), `MODEL_TTL_DAYS`, `RATE_LIMIT_PER_MIN`, `TRUST_PROXY`,
